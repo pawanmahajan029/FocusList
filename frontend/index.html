@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Task Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-nav">
+                <a href="dashboard.html" class="back-btn">← Dashboard</a>
+            </div>
+            <h1>📋 My Task Tracker</h1>
+            <p class="subtitle">Track your tasks with deadlines and achieve your goals!</p>
+        </header>
+
+        <!-- Task Input Section -->
+        <div class="task-input-section">
+            <input type="text" id="taskNameInput" placeholder="Enter a new task..." class="task-input">
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Start Date</label>
+                    <input type="date" id="startDateInput" class="date-input">
+                </div>
+
+                <div class="input-group">
+                    <label>End Deadline</label>
+                    <input type="date" id="endDateInput" class="date-input">
+                </div>
+
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="categoryInput" class="category-select">
+                        <option value="WORK">Work</option>
+                        <option value="LEARNING">Learning</option>
+                        <option value="HEALTH">Health</option>
+                        <option value="PERSONAL">Personal</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="addTaskBtn" class="add-task-btn">+ Add Task</button>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-section">
+            <select id="categoryFilter" class="category-filter">
+                <option value="ALL">All Categories</option>
+                <option value="WORK">Work</option>
+                <option value="LEARNING">Learning</option>
+                <option value="HEALTH">Health</option>
+                <option value="PERSONAL">Personal</option>
+            </select>
+        </div>
+
+        <!-- Progress Summary -->
+        <div class="progress-summary">
+            <div class="summary-stats">
+                <div class="summary-item">
+                    <div class="summary-label">Completed</div>
+                    <div class="summary-value" id="completedCount">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total Target</div>
+                    <div class="summary-value" id="totalTargetCount">0</div>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0% Complete • Expected: 0% by now</div>
+        </div>
+
+        <!-- Task Lists -->
+        <div id="taskLists">
+            <!-- Overdue Tasks -->
+            <div class="task-section" id="overdueSection" style="display: none;">
+                <div class="section-header overdue-header">
+                    <span>● OVERDUE</span>
+                    <span class="section-count" id="overdueBadge">0</span>
+                </div>
+                <div id="overdueTasks" class="task-list"></div>
+            </div>
+
+            <!-- Due Today Tasks -->
+            <div class="task-section" id="dueTodaySection" style="display: none;">
+                <div class="section-header today-header">
+                    <span>● DUE TODAY</span>
+                    <span class="section-count" id="dueTodayBadge">0</span>
+                </div>
+                <div id="dueTodayTasks" class="task-list"></div>
+            </div>
+
+            <!-- This Week Tasks -->
+            <div class="task-section" id="thisWeekSection" style="display: none;">
+                <div class="section-header week-header">
+                    <span>📅 THIS WEEK</span>
+                    <span class="section-count" id="thisWeekBadge">0</span>
+                </div>
+                <div id="thisWeekTasks" class="task-list"></div>
+            </div>
+
+            <!-- Later Tasks -->
+            <div class="task-section" id="laterSection" style="display: none;">
+                <div class="section-header later-header">
+                    <span>📆 LATER</span>
+                    <span class="section-count" id="laterBadge">0</span>
+                </div>
+                <div id="laterTasks" class="task-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

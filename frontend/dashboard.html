@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker - Dashboard</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Task Tracker Dashboard</h1>
+            <p class="subtitle">Overview of all your tasks and categories</p>
+        </header>
+
+        <!-- Overall Progress Summary -->
+        <div class="dashboard-summary">
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="summary-info">
+                    <div class="summary-number" id="totalCompleted">0</div>
+                    <div class="summary-label">Completed Tasks</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-bullseye"></i></div>
+                <div class="summary-info">
+                    <div class="summary-number" id="totalTasks">0</div>
+                    <div class="summary-label">Total Tasks</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-chart-pie"></i></div>
+                <div class="summary-info">
+                    <div class="summary-number" id="overallProgress">0%</div>
+                    <div class="summary-label">Overall Progress</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-folder-open"></i></div>
+                <div class="summary-info">
+                    <div class="summary-number" id="activeCategories">0</div>
+                    <div class="summary-label">Active Categories</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Categories Section -->
+        <div class="categories-section">
+            <h2>📁 Categories</h2>
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Category cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- View All Tasks Button -->
+        <div class="action-section">
+            <a href="index.html" class="view-all-btn">View All Tasks →</a>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
