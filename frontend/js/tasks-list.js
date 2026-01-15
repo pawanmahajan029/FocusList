@@ -101,27 +101,20 @@ function renderTaskCard(task) {
 
     return `
         <div class="task-card ${isCompleted ? 'completed' : ''}">
-            <input type="checkbox" 
-                   class="task-checkbox" 
-                   ${isCompleted ? 'checked' : ''}
-                   onchange="toggleTask('${task._id}', this)"
-                   ${isCompleted ? 'disabled' : ''}>
-            
-            <div class="task-content">
-                <div class="task-header">
-                    <div class="task-name">${task.name || 'Untitled Task'}</div>
+            <div class="task-header">
+                <div>
                     <span class="task-category ${category}">${getCategoryName(category)}</span>
-                    <span class="task-status ${isCompleted ? 'completed' : 'pending'}">
-                        ${isCompleted ? 'Completed' : 'Pending'}
-                    </span>
+                    <div class="task-name">${task.name || 'Untitled Task'}</div>
                 </div>
-                <div class="task-meta">
-                    ${dateDisplay}
-                    <span><i class="fas fa-tasks"></i> ${completedTasks}/${totalTasks} items</span>
-                </div>
+                <input type="checkbox" 
+                       class="task-checkbox" 
+                       ${isCompleted ? 'checked' : ''}
+                       onchange="toggleTask('${task._id}', this)"
+                       ${isCompleted ? 'disabled' : ''}>
             </div>
-
-                </div>
+            
+            <div class="task-date">
+                ${dateDisplay}
             </div>
 
             <div class="task-actions">
@@ -130,6 +123,9 @@ function renderTaskCard(task) {
                         <div class="progress-fill ${category}" style="width: ${progressPercent}%"></div>
                     </div>
                     <div class="progress-text">${progressPercent}% Complete</div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">
+                        ${completedTasks}/${totalTasks} items
+                    </div>
                 </div>
                 <button class="delete-btn" onclick="deleteTask('${task._id}')" title="Delete Task">
                     <i class="fas fa-trash-alt"></i>

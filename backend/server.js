@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // API Routes
 app.use('/api/tasks', taskRoutes);
+app.use('/api/v1/users', require('./routes/users'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -37,11 +38,11 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ error: 'API endpoint not found' });
     }
-    res.sendFile(path.join(__dirname, '../frontend', 'dashboard.html'));
+    res.sendFile(path.join(__dirname, '../frontend/html', 'index.html'));
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 7845;
 const server = app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
     console.log(`📁 Serving frontend from: ${path.join(__dirname, '../frontend')}`);
