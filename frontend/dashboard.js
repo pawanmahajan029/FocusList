@@ -22,29 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilterButtons();
 });
 
+
 // Load tasks from API
 async function loadTasks() {
     try {
-        // Add timeout to fail fast if server is down
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
-
-        const response = await fetch(API_URL, { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const response = await fetch(API_URL);
 
         if (!response.ok) throw new Error('Failed to load tasks');
-        const apiTasks = await response.json();
-
-        // Use mock data if API returns empty array
-        if (!apiTasks || apiTasks.length === 0) {
-            console.warn('API returned empty data, using mock data for demonstration.');
-            allTasks = getMockData();
-        } else {
-            allTasks = apiTasks;
-        }
+        allTasks = await response.json();
     } catch (error) {
-        console.warn('API unavailable, loading mock data for design preview.');
-        allTasks = getMockData(); // Fallback to mock data
+        console.error('Failed to load tasks from API:', error);
+        allTasks = []; // Empty array if API fails
     } finally {
         applyTimeFilter(); // Apply current filter
         updateDashboard();
@@ -52,90 +40,6 @@ async function loadTasks() {
     }
 }
 
-function getMockData() {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
-
-    const nextMonth = new Date(today);
-    nextMonth.setMonth(today.getMonth() + 1);
-
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(today.getMonth() - 1);
-
-    return [
-        // Today tasks
-        {
-            name: 'Complete JavaScript Tutorial',
-            category: 'LEARNING',
-            timeline: {
-                startDate: today.toISOString(),
-                targetDate: today.toISOString(),
-                totalTaskCount: 5
-            },
-            progress: { completed: 3 }
-        },
-        {
-            name: 'Finish Project Presentation',
-            category: 'WORK',
-            timeline: {
-                startDate: today.toISOString(),
-                targetDate: today.toISOString(),
-                totalTaskCount: 3
-            },
-            progress: { completed: 1 }
-        },
-
-        // This week tasks
-        {
-            name: 'Gym Workout Routine',
-            category: 'HEALTH',
-            timeline: {
-                startDate: today.toISOString(),
-                targetDate: nextWeek.toISOString(),
-                totalTaskCount: 7
-            },
-            progress: { completed: 4 }
-        },
-        {
-            name: 'Organize Home Office',
-            category: 'PERSONAL',
-            timeline: {
-                startDate: today.toISOString(),
-                targetDate: tomorrow.toISOString(),
-                totalTaskCount: 2
-            },
-            progress: { completed: 1 }
-        },
-
-        // This month tasks
-        {
-            name: 'Read 3 Technical Books',
-            category: 'LEARNING',
-            timeline: {
-                startDate: today.toISOString(),
-                targetDate: nextMonth.toISOString(),
-                totalTaskCount: 10
-            },
-            progress: { completed: 5 }
-        },
-
-        // Past task (should only show in "All")
-        {
-            name: 'Q4 Report Submission',
-            category: 'WORK',
-            timeline: {
-                startDate: lastMonth.toISOString(),
-                targetDate: lastMonth.toISOString(),
-                totalTaskCount: 5
-            },
-            progress: { completed: 5 }
-        }
-    ];
-}
 
 // Update dashboard with statistics
 // Update dashboard with statistics

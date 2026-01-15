@@ -323,6 +323,7 @@ function renderTaskSection(sectionName, tasks) {
     const listEl = document.getElementById(list);
     const badgeEl = document.getElementById(badge);
 
+    // Show all tasks (both completed and incomplete)
     if (tasks.length === 0) {
         sectionEl.style.display = 'none';
         return;
