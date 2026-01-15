@@ -39,10 +39,33 @@ const state = new Proxy({
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    renderInitialState(); // Render empty state immediately
+    updateUserProfile(); // Load user info
+    renderInitialState();
     loadTasks();
     setupFilters();
 });
+
+function updateUserProfile() {
+    const username = localStorage.getItem('username') || 'User';
+    const name = localStorage.getItem('name') || username;
+
+    // Update elements if they exist
+    const avatarEl = document.getElementById('userAvatar');
+    const nameEl = document.getElementById('userName');
+
+    if (avatarEl) avatarEl.textContent = username.charAt(0).toUpperCase();
+    if (nameEl) nameEl.textContent = name;
+}
+
+// Logout function
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('name');
+        window.location.href = 'index.html';
+    }
+}
 
 // Render initial state with zeros
 function renderInitialState() {

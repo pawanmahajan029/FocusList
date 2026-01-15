@@ -7,11 +7,33 @@ let currentCategory = 'ALL';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    updateUserProfile();
     setupEventListeners();
     loadTasks();
     setDefaultDates();
     handleCategoryFromURL();
 });
+
+function updateUserProfile() {
+    const username = localStorage.getItem('username') || 'User';
+    const name = localStorage.getItem('name') || username;
+
+    // Update elements if they exist
+    const avatarEl = document.getElementById('userAvatar');
+    const nameEl = document.getElementById('userName');
+
+    if (avatarEl) avatarEl.textContent = username.charAt(0).toUpperCase();
+    if (nameEl) nameEl.textContent = name;
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('name');
+        window.location.href = 'index.html';
+    }
+}
 
 // Handle category filter from URL parameter
 function handleCategoryFromURL() {
