@@ -1,5 +1,5 @@
 // API Configuration
-const API_URL = 'http://localhost:7845/api/tasks';
+const API_URL = '/api/tasks';
 
 // Global state
 let allTasks = [];
