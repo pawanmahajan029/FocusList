@@ -44,9 +44,9 @@ app.get('*', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 7845;
 const server = app.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
-    console.log(`📁 Serving frontend from: ${path.join(__dirname, '../frontend')}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Serving frontend from: ${path.join(__dirname, '../frontend')}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 // Graceful shutdown
