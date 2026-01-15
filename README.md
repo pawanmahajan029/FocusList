@@ -68,6 +68,19 @@ A modern, professional task tracking application with a beautiful dashboard and 
    - Main Task List: `frontend/index.html`
    - Dashboard: `frontend/dashboard.html`
 
+## 🚀 Deployment
+
+This application is ready for deployment! See **[DEPLOYMENT.md](DEPLOYMENT.md)** for detailed instructions on deploying to Render (free hosting).
+
+**Quick Deploy to Render:**
+1. Push code to GitHub
+2. Sign up at [render.com](https://render.com)
+3. Create new Web Service from your repo
+4. Set environment variables (see `.env.example`)
+5. Deploy! 🎉
+
+Your app will be live at: `https://your-app.onrender.com`
+
 ## Usage
 
 ### Adding a Task
