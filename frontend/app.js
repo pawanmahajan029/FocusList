@@ -151,7 +151,9 @@ async function addTask() {
         document.getElementById('taskNameInput').value = '';
         setDefaultDates();
 
-        await loadTasks();
+        // Redirect to dashboard
+        window.location.href = 'dashboard.html';
+
     } catch (error) {
         console.warn('Backend unavailable, adding task to local storage:', error.message);
 

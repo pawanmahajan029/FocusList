@@ -16,13 +16,14 @@ const state = new Proxy({
     allTasks: [], // Store all tasks from API
     tasks: [],    // Store currently filtered tasks
     currentFilter: 'all', // Current time filter
+    categoryFilter: 'all', // Current category filter
     searchQuery: '' // Search query
 }, {
     set(target, property, value) {
         target[property] = value;
 
         // When data source, filter, or search changes, re-apply filter logic
-        if (property === 'allTasks' || property === 'currentFilter' || property === 'searchQuery') {
+        if (property === 'allTasks' || property === 'currentFilter' || property === 'categoryFilter' || property === 'searchQuery') {
             applyFilters();
         }
 
@@ -154,8 +155,11 @@ function renderCategories(categoryStats) {
         const completedColor = getCompletedColor(key);
         const pendingColor = getPendingColor(key);
 
+        // Determine active state for styling
+        const isActive = state.categoryFilter === key ? 'active-category' : '';
+
         return `
-            <a href="index.html?category=${key}" class="category-card ${key}">
+            <div onclick="filterByCategory('${key}')" class="category-card ${key} ${isActive}" style="cursor: pointer;">
                 <div class="category-card-header">
                     <div class="category-title">
                         <span class="category-icon ${key}">${config.icon}</span>
@@ -183,7 +187,7 @@ function renderCategories(categoryStats) {
                     </div>
                     <div class="progress-percentage">${progress}% Complete</div>
                 </div>
-            </a>
+            </div>
         `;
     }).join('');
 
@@ -237,7 +241,23 @@ function setupFilters() {
     }
 }
 
-// Apply filters (Time + Search) to tasks
+// Filter by category
+function filterByCategory(category) {
+    if (state.categoryFilter === category) {
+        // Toggle off if already selected
+        state.categoryFilter = 'all';
+    } else {
+        state.categoryFilter = category;
+    }
+
+    // Scroll to task list to see results
+    const taskSection = document.getElementById('filteredTasksSection');
+    if (taskSection) {
+        taskSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Apply filters (Time + Category + Search) to tasks
 function applyFilters() {
     let filtered = [...state.allTasks];
 
@@ -262,7 +282,12 @@ function applyFilters() {
         });
     }
 
-    // 2. Apply Search Filter
+    // 2. Apply Category Filter
+    if (state.categoryFilter !== 'all') {
+        filtered = filtered.filter(task => task.category === state.categoryFilter);
+    }
+
+    // 3. Apply Search Filter
     if (state.searchQuery) {
         filtered = filtered.filter(task => {
             const nameMatch = task.name && task.name.toLowerCase().includes(state.searchQuery);
@@ -271,14 +296,13 @@ function applyFilters() {
         });
     }
 
-    // 3. Sort by Deadline (Ascending - Closest first)
-    filtered.sort((a, b) => {
-        const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date(8640000000000000);
-        const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date(8640000000000000);
-        return dateA - dateB;
-    });
-
     state.tasks = filtered; // Update state.tasks, triggers UI Update
+
+    // Re-render categories to update active state styling
+    // We need to calculate fresh stats based on ALL tasks, not filtered tasks?
+    // Actually, stats usually remain global.
+    // However, we need to re-render to update the 'active-category' class if we added it.
+    updateDashboard();
 }
 
 // Date helper functions
@@ -318,16 +342,28 @@ function renderFilteredTasks() {
     const tasksTitle = document.getElementById('filteredTasksTitle');
 
     // Update title based on filter
-    const filterTitles = {
-        'all': 'All Tasks',
-        'today': 'Tasks Due Today',
-        'week': 'Tasks Due This Week',
-        'month': 'Tasks Due This Month'
-    };
-    tasksTitle.textContent = filterTitles[state.currentFilter] || 'Filtered Tasks';
+    let title = 'Tasks';
+
+    if (state.categoryFilter !== 'all') {
+        const catName = CATEGORIES[state.categoryFilter].name;
+        title = `${catName} Tasks`;
+    } else {
+        const timeTitles = {
+            'all': 'All Tasks',
+            'today': 'Tasks Due Today',
+            'week': 'Tasks Due This Week',
+            'month': 'Tasks Due This Month'
+        };
+        title = timeTitles[state.currentFilter] || 'Filtered Tasks';
+    }
+
+    tasksTitle.textContent = title;
 
     // Show/hide section based on filter
-    if (state.currentFilter === 'all') {
+    // Always show if a category is selected OR if it's not 'all' time filter
+    // If it is 'all' time filter AND 'all' category AND no search, maybe hide?
+    // User requested to see list on click.
+    if (state.currentFilter === 'all' && state.categoryFilter === 'all' && !state.searchQuery) {
         taskSection.style.display = 'none';
         return;
     }

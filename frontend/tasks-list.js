@@ -70,11 +70,11 @@ function renderTasks() {
     container.style.display = 'flex';
     emptyState.style.display = 'none';
 
-    // Sort tasks by date (earliest deadline first)
+    // Sort tasks by date (most recent first)
     const sortedTasks = [...filteredTasks].sort((a, b) => {
-        const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date(8640000000000000); // Max Date
-        const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date(8640000000000000);
-        return dateA - dateB;
+        const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date(0);
+        const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date(0);
+        return dateB - dateA;
     });
 
     container.innerHTML = sortedTasks.map(task => renderTaskCard(task)).join('');
