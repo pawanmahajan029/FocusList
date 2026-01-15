@@ -12,17 +12,13 @@
     <div class="container">
         <header>
             <div class="header-nav">
-                <a href="dashboard.html" class="back-btn">← Dashboard</a>
+                <a href="index.html" class="back-btn">← Dashboard</a>
                 <button onclick="logout()" class="back-btn"
                     style="margin-left: 10px; border:none; background:none; cursor:pointer; color: #667eea; font-weight:600;">Logout</button>
             </div>
             <script src="auth.js"></script>
             <script>
-                checkAuth(); // This function in auth.js redirects if NO token, but for login page it redirects if token exists. 
-                // Wait, checkAuth in auth.js redirects to dashboard if token EXISTS.
-                // I need a different check for protected pages.
-
-                // Let's implement inline check here for simplicity or update auth.js
+                // Protect Route: Redirect to login if NO token
                 const token = localStorage.getItem('token');
                 if (!token) window.location.href = 'login.html';
             </script>
@@ -30,7 +26,7 @@
             <p class="subtitle">Track your tasks with deadlines and achieve your goals!</p>
         </header>
 
-        <!-- Task Input Section -->
+        Task Input Section
         <div class="task-input-section">
             <input type="text" id="taskNameInput" placeholder="Enter a new task..." class="task-input">
 
@@ -59,74 +55,7 @@
             <button id="addTaskBtn" class="add-task-btn">+ Add Task</button>
         </div>
 
-        <!-- Category Filter -->
-        <div class="filter-section">
-            <select id="categoryFilter" class="category-filter">
-                <option value="ALL">All Categories</option>
-                <option value="WORK">Work</option>
-                <option value="LEARNING">Learning</option>
-                <option value="HEALTH">Health</option>
-                <option value="PERSONAL">Personal</option>
-            </select>
-        </div>
-
-        <!-- Progress Summary -->
-        <div class="progress-summary">
-            <div class="summary-stats">
-                <div class="summary-item">
-                    <div class="summary-label">Completed</div>
-                    <div class="summary-value" id="completedCount">0</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Total Target</div>
-                    <div class="summary-value" id="totalTargetCount">0</div>
-                </div>
-            </div>
-
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressBarFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">0% Complete • Expected: 0% by now</div>
-        </div>
-
-        <!-- Task Lists -->
-        <div id="taskLists">
-            <!-- Overdue Tasks -->
-            <div class="task-section" id="overdueSection" style="display: none;">
-                <div class="section-header overdue-header">
-                    <span>● OVERDUE</span>
-                    <span class="section-count" id="overdueBadge">0</span>
-                </div>
-                <div id="overdueTasks" class="task-list"></div>
-            </div>
-
-            <!-- Due Today Tasks -->
-            <div class="task-section" id="dueTodaySection" style="display: none;">
-                <div class="section-header today-header">
-                    <span>● DUE TODAY</span>
-                    <span class="section-count" id="dueTodayBadge">0</span>
-                </div>
-                <div id="dueTodayTasks" class="task-list"></div>
-            </div>
-
-            <!-- This Week Tasks -->
-            <div class="task-section" id="thisWeekSection" style="display: none;">
-                <div class="section-header week-header">
-                    <span> THIS WEEK</span>
-                    <span class="section-count" id="thisWeekBadge">0</span>
-                </div>
-                <div id="thisWeekTasks" class="task-list"></div>
-            </div>
-
-            <!-- Later Tasks -->
-            <div class="task-section" id="laterSection" style="display: none;">
-                <div class="section-header later-header">
-                    <span> LATER</span>
-                    <span class="section-count" id="laterBadge">0</span>
-                </div>
-                <div id="laterTasks" class="task-list"></div>
-            </div>
-        </div>
+    </div>
     </div>
 
     <script src="app.js"></script>
