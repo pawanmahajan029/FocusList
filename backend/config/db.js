@@ -6,10 +6,10 @@ const connectDB = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
-        console.log('✅ MongoDB Connected Successfully');
+        console.log(' MongoDB Connected Successfully');
     } catch (error) {
-        console.warn('⚠️  MongoDB Connection Failed:', error.message);
-        console.warn('⚠️  Server will run with in-memory storage (data will not persist)');
+        console.warn(' MongoDB Connection Failed:', error.message);
+        console.warn(' Server will run with in-memory storage (data will not persist)');
     }
 };
 

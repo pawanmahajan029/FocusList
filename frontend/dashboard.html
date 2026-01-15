@@ -13,9 +13,35 @@
 <body>
     <div class="container">
         <header>
-            <h1>📊 Task Tracker Dashboard</h1>
+            <h1> Task Tracker Dashboard</h1>
             <p class="subtitle">Overview of all your tasks and categories</p>
         </header>
+
+        <!-- Time Filter Section -->
+        <div class="time-filter-section">
+            <div class="filter-label">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Time Period</span>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-infinity"></i>
+                    All
+                </button>
+                <button class="filter-btn" data-filter="today">
+                    <i class="fas fa-calendar-day"></i>
+                    Today
+                </button>
+                <button class="filter-btn" data-filter="week">
+                    <i class="fas fa-calendar-week"></i>
+                    This Week
+                </button>
+                <button class="filter-btn" data-filter="month">
+                    <i class="fas fa-calendar"></i>
+                    This Month
+                </button>
+            </div>
+        </div>
 
         <!-- Overall Progress Summary -->
         <div class="dashboard-summary">
@@ -55,9 +81,20 @@
 
         <!-- Categories Section -->
         <div class="categories-section">
-            <h2>📁 Categories</h2>
+            <h2> Categories</h2>
             <div class="categories-grid" id="categoriesGrid">
                 <!-- Category cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Filtered Tasks Section -->
+        <div class="filtered-tasks-section" id="filteredTasksSection" style="display: none;">
+            <h2>
+                <i class="fas fa-tasks"></i>
+                <span id="filteredTasksTitle">Filtered Tasks</span>
+            </h2>
+            <div class="tasks-list" id="filteredTasksList">
+                <!-- Tasks will be dynamically inserted here -->
             </div>
         </div>
 
