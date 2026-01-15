@@ -130,8 +130,7 @@ function renderTaskCard(task) {
                 <input type="checkbox" 
                        class="task-checkbox" 
                        ${isCompleted ? 'checked' : ''}
-                       onchange="toggleTask('${task._id}', this)"
-                       ${isCompleted ? 'disabled' : ''}>
+                       onchange="toggleTask('${task._id}', this)">
             </div>
             
             <div class="task-date">

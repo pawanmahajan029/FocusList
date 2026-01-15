@@ -134,9 +134,12 @@ router.put('/:id/progress', async (req, res) => {
             if (checked && !wasCompleted) {
                 weekEntry.completedAt[day] = new Date();
                 task.progress.completed = (task.progress.completed || 0) + 1;
-            } else if (!checked && wasCompleted) {
+            } else if (!checked) {
                 weekEntry.completedAt[day] = null;
-                task.progress.completed = Math.max(0, (task.progress.completed || 0) - 1);
+                // Decrement if it was completed on this day OR if count is positive (handle data mismatch)
+                if (wasCompleted || task.progress.completed > 0) {
+                    task.progress.completed = Math.max(0, (task.progress.completed || 0) - 1);
+                }
             }
 
             if (task.timeline && task.timeline.targetDate) {
