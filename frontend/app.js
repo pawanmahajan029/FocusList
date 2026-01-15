@@ -374,7 +374,7 @@ function renderTaskItem(task, isOverdue) {
             </div>
             
             <button class="delete-btn" onclick="deleteTask('${task._id}')" title="Delete">
-                🗑️
+                <i class="fas fa-trash-alt"></i>
             </button>
         </div>
     `;

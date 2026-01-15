@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Task Tracker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -14,7 +13,19 @@
         <header>
             <div class="header-nav">
                 <a href="dashboard.html" class="back-btn">← Dashboard</a>
+                <button onclick="logout()" class="back-btn"
+                    style="margin-left: 10px; border:none; background:none; cursor:pointer; color: #667eea; font-weight:600;">Logout</button>
             </div>
+            <script src="auth.js"></script>
+            <script>
+                checkAuth(); // This function in auth.js redirects if NO token, but for login page it redirects if token exists. 
+                // Wait, checkAuth in auth.js redirects to dashboard if token EXISTS.
+                // I need a different check for protected pages.
+
+                // Let's implement inline check here for simplicity or update auth.js
+                const token = localStorage.getItem('token');
+                if (!token) window.location.href = 'login.html';
+            </script>
             <h1> My Task Tracker</h1>
             <p class="subtitle">Track your tasks with deadlines and achieve your goals!</p>
         </header>

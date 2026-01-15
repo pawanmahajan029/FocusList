@@ -271,6 +271,13 @@ function applyFilters() {
         });
     }
 
+    // 3. Sort by Deadline (Ascending - Closest first)
+    filtered.sort((a, b) => {
+        const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date(8640000000000000);
+        const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date(8640000000000000);
+        return dateA - dateB;
+    });
+
     state.tasks = filtered; // Update state.tasks, triggers UI Update
 }
 
@@ -379,19 +386,45 @@ function renderFilteredTasks() {
                         </div>
                     </div>
                 </div>
-                <div class="task-progress-info">
-                    <div class="task-progress-bar">
-                        <div class="task-progress-fill ${category}" style="width: ${progressPercent}%"></div>
+                <div class="task-actions">
+                    <div class="task-progress-info">
+                        <div class="task-progress-bar">
+                            <div class="task-progress-fill ${category}" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="task-progress-text">
+                            ${completedItems} of ${totalItems} completed (${progressPercent}%)
+                        </div>
                     </div>
-                    <div class="task-progress-text">
-                        ${completedItems} of ${totalItems} completed (${progressPercent}%)
-                    </div>
+                    <button class="delete-btn" onclick="deleteTaskConfirmed('${task._id}')" title="Delete Task">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
         `;
     }).join('');
 
     tasksList.innerHTML = taskCards;
+}
+
+// Delete Task Function
+async function deleteTaskConfirmed(taskId) {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${taskId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Failed to delete task');
+
+        // Update local state (reactivity will handle UI update)
+        const updatedTasks = state.allTasks.filter(t => t._id !== taskId);
+        state.allTasks = updatedTasks;
+
+    } catch (error) {
+        console.error('Failed to delete task:', error);
+        alert('Failed to delete task');
+    }
 }
 
 // Format date helper

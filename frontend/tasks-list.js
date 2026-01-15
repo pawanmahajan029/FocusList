@@ -70,11 +70,11 @@ function renderTasks() {
     container.style.display = 'flex';
     emptyState.style.display = 'none';
 
-    // Sort tasks by date (most recent first)
+    // Sort tasks by date (earliest deadline first)
     const sortedTasks = [...filteredTasks].sort((a, b) => {
-        const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date(0);
-        const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date(0);
-        return dateB - dateA;
+        const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date(8640000000000000); // Max Date
+        const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date(8640000000000000);
+        return dateA - dateB;
     });
 
     container.innerHTML = sortedTasks.map(task => renderTaskCard(task)).join('');
@@ -121,14 +121,44 @@ function renderTaskCard(task) {
                 </div>
             </div>
 
-            <div class="task-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill ${category}" style="width: ${progressPercent}%"></div>
                 </div>
-                <div class="progress-text">${progressPercent}% Complete</div>
+            </div>
+
+            <div class="task-actions">
+                <div class="task-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill ${category}" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <div class="progress-text">${progressPercent}% Complete</div>
+                </div>
+                <button class="delete-btn" onclick="deleteTask('${task._id}')" title="Delete Task">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
             </div>
         </div>
     `;
+}
+
+// Delete task
+async function deleteTask(taskId) {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${taskId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Failed to delete task');
+
+        // Remove from local array and re-render
+        allTasks = allTasks.filter(t => t._id !== taskId);
+        applyFilters();
+
+        // Optional: Show a toast or notification
+    } catch (error) {
+        console.error('Failed to delete task:', error);
+        alert('Failed to delete task. Please try again.');
+    }
 }
 
 // Toggle task completion
@@ -140,10 +170,10 @@ async function toggleTask(taskId, checkbox) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                week: 1,
+                week: 1, // Defaulting to week 1 for now
                 year: new Date().getFullYear(),
                 month: new Date().getMonth() + 1,
-                day: 'monday',
+                day: 'monday', // This simulates a daily check, but backend might need specific day logic
                 checked: checkbox.checked
             })
         });
