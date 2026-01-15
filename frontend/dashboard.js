@@ -1,11 +1,6 @@
 // API Configuration
 const API_URL = 'http://localhost:7845/api/tasks';
 
-// Global state
-let tasks = [];
-let allTasks = []; // Store all tasks for filtering
-let currentFilter = 'all'; // Current time filter
-
 // Category configuration with specific order
 const CATEGORY_ORDER = ['LEARNING', 'WORK', 'PERSONAL', 'HEALTH'];
 
@@ -16,11 +11,48 @@ const CATEGORIES = {
     HEALTH: { name: 'Health', icon: '<i class="fas fa-dumbbell"></i>' }
 };
 
+// Reactive State Management
+const state = new Proxy({
+    allTasks: [], // Store all tasks from API
+    tasks: [],    // Store currently filtered tasks
+    currentFilter: 'all', // Current time filter
+    searchQuery: '' // Search query
+}, {
+    set(target, property, value) {
+        target[property] = value;
+
+        // When data source, filter, or search changes, re-apply filter logic
+        if (property === 'allTasks' || property === 'currentFilter' || property === 'searchQuery') {
+            applyFilters();
+        }
+
+        // When filtered tasks list changes, update the UI
+        if (property === 'tasks') {
+            updateDashboard();
+            renderFilteredTasks();
+        }
+
+        return true;
+    }
+});
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    renderInitialState(); // Render empty state immediately
     loadTasks();
-    setupFilterButtons();
+    setupFilters();
 });
+
+// Render initial state with zeros
+function renderInitialState() {
+    const categoryStats = {
+        WORK: { total: 0, itemsCompleted: 0, itemsNeeded: 0 },
+        LEARNING: { total: 0, itemsCompleted: 0, itemsNeeded: 0 },
+        HEALTH: { total: 0, itemsCompleted: 0, itemsNeeded: 0 },
+        PERSONAL: { total: 0, itemsCompleted: 0, itemsNeeded: 0 }
+    };
+    renderCategories(categoryStats);
+}
 
 
 // Load tasks from API
@@ -29,25 +61,30 @@ async function loadTasks() {
         const response = await fetch(API_URL);
 
         if (!response.ok) throw new Error('Failed to load tasks');
-        allTasks = await response.json();
+        state.allTasks = await response.json(); // Triggers reactivity
     } catch (error) {
         console.error('Failed to load tasks from API:', error);
-        allTasks = []; // Empty array if API fails
-    } finally {
-        applyTimeFilter(); // Apply current filter
-        updateDashboard();
-        renderFilteredTasks();
+        state.allTasks = []; // Triggers reactivity
     }
 }
 
 
 // Update dashboard with statistics
-// Update dashboard with statistics
 function updateDashboard() {
-    // Calculate overall statistics
-    let totalItemsCompleted = 0;  // Sum of all completed items across all tasks
-    let totalItemsNeeded = 0;     // Sum of all items needed across all tasks
-    let totalTaskCount = 0;       // Number of tasks
+    // Calculate overall statistics based on ALL tasks (ignoring search/time filters for the stats cards preferably? 
+    // Or normally dashboard stats adjust to filters. Let's make stats global but list filtered.
+    // Actually, typically dashboard summary shows 'Current View' stats. Let's keep using state.tasks (filtered) 
+    // BUT the standard is usually summary of EVERYTHING vs filtered list. 
+    // Let's use state.allTasks for the summary cards to show "Total" overview, 
+    // and only use filtered for the list. 
+    // HOWEVER, the previous logic used `state.tasks` for stats. 
+    // Providing immediate feedback on filter is nice. Let's stick to using filtered tasks for stats *if* the user wants to see stats for "Today" specifically.
+    // BUT search is usually a finder.
+    // Let's rely on `state.tasks` (filtered) for consistency with previous behavior.
+
+    let totalItemsCompleted = 0;
+    let totalItemsNeeded = 0;
+    let totalTaskCount = 0;
 
     const categoryStats = {
         WORK: { total: 0, itemsCompleted: 0, itemsNeeded: 0 },
@@ -56,7 +93,7 @@ function updateDashboard() {
         PERSONAL: { total: 0, itemsCompleted: 0, itemsNeeded: 0 }
     };
 
-    tasks.forEach(task => {
+    state.tasks.forEach(task => {
         const taskTotal = task.timeline?.totalTaskCount || 1;
         const taskCompletedCount = task.progress?.completed || 0;
 
@@ -72,7 +109,7 @@ function updateDashboard() {
     });
 
     // Calculate how many tasks are fully completed
-    const fullyCompletedTasks = tasks.filter(task => {
+    const fullyCompletedTasks = state.tasks.filter(task => {
         const taskTotal = task.timeline?.totalTaskCount || 1;
         const taskCompletedCount = task.progress?.completed || 0;
         return taskCompletedCount >= taskTotal;
@@ -155,28 +192,30 @@ function renderCategories(categoryStats) {
 
 function getCompletedColor(category) {
     switch (category) {
-        case 'LEARNING': return '#f5576c';
-        case 'WORK': return '#667eea';
-        case 'PERSONAL': return '#2dd4bf'; // Teal
-        case 'HEALTH': return '#00f2fe';
+        case 'LEARNING': return '#f43f5e'; // Rose
+        case 'WORK': return '#6366f1'; // Indigo
+        case 'PERSONAL': return '#10b981'; // Emerald
+        case 'HEALTH': return '#06b6d4'; // Cyan
         default: return '#64748b';
     }
 }
 
 function getPendingColor(category) {
     switch (category) {
-        case 'LEARNING': return '#f5576c';
-        case 'WORK': return '#667eea';
-        case 'PERSONAL': return '#2dd4bf';
-        case 'HEALTH': return '#00f2fe';
+        case 'LEARNING': return '#f43f5e';
+        case 'WORK': return '#6366f1';
+        case 'PERSONAL': return '#10b981';
+        case 'HEALTH': return '#06b6d4';
         default: return '#64748b';
     }
 }
 
 // Setup filter button event listeners
-function setupFilterButtons() {
+function setupFilters() {
     const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchInput = document.querySelector('.search-bar input');
 
+    // Time filter buttons
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Remove active class from all buttons
@@ -185,53 +224,54 @@ function setupFilterButtons() {
             // Add active class to clicked button
             button.classList.add('active');
 
-            // Update current filter
-            currentFilter = button.dataset.filter;
-
-            // Apply filter and update dashboard
-            applyTimeFilter();
-            updateDashboard();
-            renderFilteredTasks();
+            // Update current filter - Triggers reactivity
+            state.currentFilter = button.dataset.filter;
         });
     });
+
+    // Search input
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            state.searchQuery = e.target.value.toLowerCase().trim();
+        });
+    }
 }
 
-// Apply time-based filter to tasks
-function applyTimeFilter() {
-    const now = new Date();
+// Apply filters (Time + Search) to tasks
+function applyFilters() {
+    let filtered = [...state.allTasks];
 
-    if (currentFilter === 'all') {
-        tasks = [...allTasks];
-        return;
+    // 1. Apply Time Filter
+    if (state.currentFilter !== 'all') {
+        filtered = filtered.filter(task => {
+            if (!task.timeline) return false;
+
+            const startDate = task.timeline.startDate ? new Date(task.timeline.startDate) : null;
+            const targetDate = task.timeline.targetDate ? new Date(task.timeline.targetDate) : null;
+
+            if (!startDate && !targetDate) return false;
+
+            const taskDate = targetDate || startDate;
+
+            switch (state.currentFilter) {
+                case 'today': return isToday(taskDate);
+                case 'week': return isThisWeek(taskDate);
+                case 'month': return isThisMonth(taskDate);
+                default: return true;
+            }
+        });
     }
 
-    tasks = allTasks.filter(task => {
-        // Check if task has timeline dates
-        if (!task.timeline) return false;
+    // 2. Apply Search Filter
+    if (state.searchQuery) {
+        filtered = filtered.filter(task => {
+            const nameMatch = task.name && task.name.toLowerCase().includes(state.searchQuery);
+            const categoryMatch = task.category && task.category.toLowerCase().includes(state.searchQuery);
+            return nameMatch || categoryMatch;
+        });
+    }
 
-        const startDate = task.timeline.startDate ? new Date(task.timeline.startDate) : null;
-        const targetDate = task.timeline.targetDate ? new Date(task.timeline.targetDate) : null;
-
-        // If no dates, exclude from filtered view
-        if (!startDate && !targetDate) return false;
-
-        // Use the most relevant date (prefer target date, fallback to start date)
-        const taskDate = targetDate || startDate;
-
-        switch (currentFilter) {
-            case 'today':
-                return isToday(taskDate);
-
-            case 'week':
-                return isThisWeek(taskDate);
-
-            case 'month':
-                return isThisMonth(taskDate);
-
-            default:
-                return true;
-        }
-    });
+    state.tasks = filtered; // Update state.tasks, triggers UI Update
 }
 
 // Date helper functions
@@ -277,10 +317,10 @@ function renderFilteredTasks() {
         'week': 'Tasks Due This Week',
         'month': 'Tasks Due This Month'
     };
-    tasksTitle.textContent = filterTitles[currentFilter] || 'Filtered Tasks';
+    tasksTitle.textContent = filterTitles[state.currentFilter] || 'Filtered Tasks';
 
     // Show/hide section based on filter
-    if (currentFilter === 'all') {
+    if (state.currentFilter === 'all') {
         taskSection.style.display = 'none';
         return;
     }
@@ -288,7 +328,7 @@ function renderFilteredTasks() {
     taskSection.style.display = 'block';
 
     // If no tasks, show message
-    if (tasks.length === 0) {
+    if (state.tasks.length === 0) {
         tasksList.innerHTML = `
             <div class="no-tasks-message">
                 <i class="fas fa-inbox"></i>
@@ -299,7 +339,7 @@ function renderFilteredTasks() {
     }
 
     // Render task cards
-    const taskCards = tasks.map(task => {
+    const taskCards = state.tasks.map(task => {
         const category = task.category || 'PERSONAL';
         const categoryConfig = CATEGORIES[category];
         const taskName = task.name || 'Untitled Task';
