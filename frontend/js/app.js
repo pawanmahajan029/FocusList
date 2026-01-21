@@ -51,10 +51,20 @@ function setDefaultDates() {
 }
 
 function setupEventListeners() {
-    document.getElementById('addTaskBtn').addEventListener('click', addTask);
-    document.getElementById('taskNameInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addTask();
-    });
+    const addTaskForm = document.getElementById('addTaskForm');
+    if (addTaskForm) {
+        addTaskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            addTask();
+        });
+    }
+
+    // Backup for if the button is clicked outside a form context (though it is inside now)
+    // We remove the direct click listener on the button to rely on the form submit
+    // document.getElementById('addTaskBtn').addEventListener('click', addTask); 
+
+    // We also don't need the keypress listener anymore as forms handle Enter automatically
+
 
     // Category Filter Listener
     document.getElementById('categoryFilter').addEventListener('change', (e) => {
