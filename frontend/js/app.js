@@ -327,10 +327,21 @@ function renderTasks() {
     });
 
     // Sort each section by due date (ascending - nearest first)
+    // Sort each section by due date (ascending - nearest first)
     const sortByDueDate = (a, b) => {
         const dateA = a.timeline?.targetDate ? new Date(a.timeline.targetDate) : new Date('9999-12-31');
         const dateB = b.timeline?.targetDate ? new Date(b.timeline.targetDate) : new Date('9999-12-31');
-        return dateA - dateB;
+
+        // Primary Sort: Due Date (Ascending)
+        if (dateA.getTime() !== dateB.getTime()) {
+            return dateA - dateB;
+        }
+
+        // Secondary Sort: Creation Date (Descending - Last added first)
+        // If dates are exactly the same, show the most recently added task first
+        const createdA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+        const createdB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+        return createdB - createdA;
     };
 
     overdueTasks.sort(sortByDueDate);
