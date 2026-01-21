@@ -367,7 +367,9 @@ function renderFilteredTasks() {
     // Update title based on filter
     let title = 'Tasks';
 
-    if (state.categoryFilter !== 'all') {
+    if (state.searchQuery) {
+        title = `Search Results for "${state.searchQuery}"`;
+    } else if (state.categoryFilter !== 'all') {
         const catName = CATEGORIES[state.categoryFilter].name;
         title = `${catName} Tasks`;
     } else {
@@ -384,8 +386,7 @@ function renderFilteredTasks() {
 
     // Show/hide section based on filter
     // Always show if a category is selected OR if it's not 'all' time filter
-    // If it is 'all' time filter AND 'all' category AND no search, maybe hide?
-    // User requested to see list on click.
+    // OR if there is a search query
     if (state.currentFilter === 'all' && state.categoryFilter === 'all' && !state.searchQuery) {
         taskSection.style.display = 'none';
         return;
